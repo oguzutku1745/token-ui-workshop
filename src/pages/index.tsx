@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import FunctionComponent from "@/components/FunctionCards/FunctionCard";
 import { Inter } from "next/font/google";
 import { useProgram } from "@/context/ProgramContext";
+import { useWorker } from '../hooks/useWorker';
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,16 +19,9 @@ interface Inputs {
   privateKey: string;
 }
 
-interface WorkerExecuteMessage {
-  type: "execute" | "key";
-  programName?: string;
-  functionName?: string;
-  inputs?: any[]; 
-  fee?: number;
-}
-
 
 export default function Home() {
+  const { postMessage } = useWorker();
   const { programName, private_key } = useProgram()
   const [error, setError] = useState<string | undefined>();
   const [executing, setExecuting] = useState(false);
@@ -48,67 +42,6 @@ export default function Home() {
     setInputData(newInputData);
   };
 
-const generateAccount = async () => {
-    workerRef.current?.postMessage("key");
-};
-
-const setPrivateKey = async () => {
-  workerRef.current?.postMessage("set")
-}
-
-const workerRef = useRef<Worker>();
-
-interface AleoWorkerMessageEvent {
-    type: string;
-    result: any;
-    account: any;
-    errorMessage: any;
-    inputs: any;
-}
-
-
-useEffect(() => {
-  workerRef.current = new Worker(new URL("worker.ts", import.meta.url));
-  workerRef.current.onmessage = (event: MessageEvent<AleoWorkerMessageEvent>) => {
-    switch (event.data.type) {
-      case "key":
-        setAccount(event.data.result);
-        console.log("Account key received:", event.data.result);
-        break;
-      case "execute":
-        setExecuting(false);
-        console.log("Execution completed:", event.data.result);
-        break;
-      case "debug":
-        console.log("Debug from worker:", event.data.account);
-        break;
-      case "inputs":
-        console.log("Inputs for worker are:", event.data.inputs);
-        break;
-      case "ALEO_WORKER_READY":
-        console.log("Aleo Worker is ready!");
-        break;
-      case "EXECUTION_TRANSACTION_COMPLETED":
-        console.log("Execution transaction completed:", event.data.result);
-        break;
-      case "ERROR":
-        console.error("Error from worker:", event.data.errorMessage);
-        setError(event.data.errorMessage);
-        break;
-      default:
-        console.log("Unhandled message from worker:", event.data);
-    }
-  };
-  return () => {
-    workerRef.current?.terminate();
-  };
-}, []);
-
-
-  const handleWork = useCallback(async () => {
-      workerRef.current?.postMessage("execute");
-  }, []);
-
   const handleSubmission = useCallback(async () => {
     if (!private_key) return
 
@@ -127,18 +60,19 @@ useEffect(() => {
 
     setExecuting(true);
 
-    workerRef.current?.postMessage({
+    postMessage({
       type: "execute",
       programName: newInputs.programId,
       functionName: newInputs.functionName,
-      inputs: values, 
+      inputs: values,
       fee: newInputs.fee,
-      privateKey: private_key
-  });
+      privateKey: private_key,
+    });
+
     setExecuting(false);
 
     console.log(newInputs);
-  }, [private_key, inputData]);;
+  }, [private_key, inputData]);
 
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}>
@@ -148,7 +82,7 @@ useEffect(() => {
         inputTypes={[["StringBox", "AmountBox", "AddressBox", "FeeBox"]]}
         onInputChange={handleInputDataChange}
         onSubmission={handleSubmission}
-        isWalletConnected={true}
+        isPrivateKeyGiven={!!private_key}
       />
         {eventId && (
           <div>

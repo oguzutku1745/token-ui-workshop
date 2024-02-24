@@ -19,7 +19,7 @@ import {
 
   const keyProvider = new AleoKeyProvider();
   keyProvider.useCache(true);
-  const networkClient = new AleoNetworkClient("https://api.explorer.aleo.org/v1");
+  const networkClient = new AleoNetworkClient("https://explorer.hamp.app/");
   
   async function ProgramExecution(programId: string, aleoFunction: string, inputs: string[], fee: number, private_key: string) {
     try {
@@ -27,8 +27,8 @@ import {
       const account = new Account({ privateKey: private_key });
       const privateKeyObject = PrivateKey.from_string(private_key);
       const recordProvider = new NetworkRecordProvider(account, networkClient);
-      const programManager = new ProgramManager("https://api.explorer.aleo.org/v1", keyProvider, recordProvider);
-      programManager.setHost("https://api.explorer.aleo.org/v1")
+      const programManager = new ProgramManager("https://explorer.hamp.app/", keyProvider, recordProvider);
+      programManager.setHost("https://explorer.hamp.app/")
       programManager.setAccount(account);
   
       const program = await programManager.networkClient.getProgramObject(programId);
@@ -76,8 +76,7 @@ import {
     if (e.data.type === "execute") {
       const { programName, functionName, inputs, fee, privateKey } = e.data;
       this.postMessage({type:"inputs", inputs: {programName,functionName,inputs,fee,privateKey}}) 
-      const result = await ProgramExecution(programName, functionName, inputs, fee, privateKey);
-      postMessage({type: "execute", result: result});
+      await ProgramExecution(programName, functionName, inputs, fee, privateKey);
     } else if (e.data.type === "key") {
       const result = getPrivateKey();
       postMessage({type: "key", result: result});

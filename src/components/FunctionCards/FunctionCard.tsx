@@ -12,14 +12,14 @@ interface FunctionComponentProps {
   inputTypes: Array<Array<'StringBox' | 'AddressBox' | 'AmountBox' | 'RecordBox' | 'FeeBox'>>;
   onInputChange: (inputData: {[key: string]: string}) => void;
   onSubmission: () => void;
-  isWalletConnected: boolean; 
+  isPrivateKeyGiven: boolean; 
 }
 
 type InputValues = {
   [key: string]: string;
 };
 
-const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputTypes, onInputChange, onSubmission, isWalletConnected }) => {
+const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputTypes, onInputChange, onSubmission, isPrivateKeyGiven }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [inputValues, setInputValues] = useState<InputValues>({});
   const [inputValuesChanged, setInputValuesChanged] = useState(false);
@@ -126,9 +126,9 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
         <button
             onClick={onSubmission}
             className="mt-4 shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7 rounded-lg"
-            disabled={!isWalletConnected}
+            disabled={!isPrivateKeyGiven}
           >
-            {!isWalletConnected ? 'Connect Your Wallet First' : 'Submit'}
+            {!isPrivateKeyGiven ? 'Connect Your Wallet First' : 'Submit'}
           </button>
       </div>
     </div>
