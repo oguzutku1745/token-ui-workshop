@@ -6,6 +6,7 @@ const MegaMenu = () => {
   const { programName, setProgramName, setFunctionNames, setMintFunctions, setPrivateFunctions, setPublicFunctions, private_key, setPrivate_key } = useProgram();
   const [loaded, setLoaded] = useState(false);
   const [keyStat, setKeyStat] = useState(false);
+  const [privateKeyInput, setPrivateKeyInput] = useState<string>('')
 
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -13,11 +14,12 @@ const MegaMenu = () => {
   };
   
   const handlePrivateKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPrivate_key(event.target.value)
+    setPrivateKeyInput(event.target.value)
   }
 
   const setKey = () => {
     setKeyStat(true);
+    setPrivate_key(privateKeyInput)
   }
 
   const setFunctions = () => {
@@ -66,7 +68,7 @@ const MegaMenu = () => {
             type="text"
             placeholder="APrivate"
             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            value={private_key}
+            value={privateKeyInput}
             onChange={handlePrivateKeyChange}
           />
          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 whitespace-nowrap" onClick={setKey}>

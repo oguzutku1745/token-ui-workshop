@@ -128,7 +128,7 @@ const FunctionComponent: React.FC<FunctionComponentProps> = ({ titles, inputType
             className="mt-4 shadow-card dark:bg-gray-700 md:h-10 md:px-5 xl:h-12 xl:px-7 rounded-lg"
             disabled={!isPrivateKeyGiven}
           >
-            {!isPrivateKeyGiven ? 'Connect Your Wallet First' : 'Submit'}
+            {!isPrivateKeyGiven ? 'Provide Your Private Key' : 'Submit'}
           </button>
       </div>
     </div>
