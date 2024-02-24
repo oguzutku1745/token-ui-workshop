@@ -16,7 +16,7 @@ export const useWorker = () => {
   const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
-    workerRef.current = new Worker(new URL("../pages/worker.ts", import.meta.url));
+    workerRef.current = new Worker(new URL("../../public/workers/worker.ts", import.meta.url));
     workerRef.current.onmessage = (event: MessageEvent<AleoWorkerMessageEvent>) => {
       switch (event.data.type) {
         case "key":
